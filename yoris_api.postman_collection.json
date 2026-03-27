@@ -1,0 +1,868 @@
+{
+  "info": {
+    "name": "Yoris API",
+    "_postman_id": "yoris-api-collection-v1",
+    "description": "Full Postman collection for the Yoris API. Covers Health, Users, Posts, Comments, Wallet, and utility endpoints. Run in order using Collection Runner to execute the full test suite sequentially.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId2",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "postId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "commentId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deliveryId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Status is ok', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.status).to.eql('ok');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User 1",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('User has id', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json.name).to.eql('Alice');",
+                  "    pm.collectionVariables.set('userId', json.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice\",\n  \"username\": \"alice99\",\n  \"email\": \"alice@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ""]
+            }
+          }
+        },
+        {
+          "name": "Create User 2 (for transfer target)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('User 2 has id', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.collectionVariables.set('userId2', json.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bob\",\n  \"username\": \"bobby42\",\n  \"email\": \"bob@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ""]
+            }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is array', () => {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ""]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct user returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.id).to.eql(parseInt(pm.collectionVariables.get('userId')));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get User By ID - Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Detail message present', () => {",
+                  "    pm.expect(pm.response.json().detail).to.eql('User not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Create Post",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Ensure userId is set before running",
+                  "const uid = pm.collectionVariables.get('userId');",
+                  "if (!uid) { throw new Error('userId not set — run Create User first'); }"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Post has id', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json.title).to.eql('My First Post');",
+                  "    pm.collectionVariables.set('postId', json.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"title\": \"My First Post\",\n  \"body\": \"Hello Yoris world!\",\n  \"amount\": 49.99\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts/",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Post - Invalid userId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 for bad userId', () => pm.response.to.have.status(400));",
+                  "pm.test('Detail mentions userId', () => {",
+                  "    pm.expect(pm.response.json().detail).to.include('userId');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 999999,\n  \"title\": \"Ghost Post\",\n  \"body\": \"This should fail\",\n  \"amount\": 10.00\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/posts/",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", ""]
+            }
+          }
+        },
+        {
+          "name": "Get All Posts",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is array', () => {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Post By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct post returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.id).to.eql(parseInt(pm.collectionVariables.get('postId')));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Post By ID - Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Detail is Post not found', () => {",
+                  "    pm.expect(pm.response.json().detail).to.eql('Post not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/posts/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["posts", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Create Comment",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const pid = pm.collectionVariables.get('postId');",
+                  "if (!pid) { throw new Error('postId not set — run Create Post first'); }"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Comment has id', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.collectionVariables.set('commentId', json.id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\",\n  \"body\": \"Great post!\",\n  \"postId\": {{postId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments/",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", ""]
+            }
+          }
+        },
+        {
+          "name": "Create Comment - Invalid postId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 for bad postId', () => pm.response.to.have.status(400));",
+                  "pm.test('Detail mentions postId', () => {",
+                  "    pm.expect(pm.response.json().detail).to.include('postId');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ghost\",\n  \"email\": \"ghost@example.com\",\n  \"body\": \"This should fail\",\n  \"postId\": 999999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/comments/",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", ""]
+            }
+          }
+        },
+        {
+          "name": "Get All Comments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response is array', () => {",
+                  "    pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", ""]
+            }
+          }
+        },
+        {
+          "name": "Get Comment By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Correct comment returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.id).to.eql(parseInt(pm.collectionVariables.get('commentId')));",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/{{commentId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "{{commentId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Comment By ID - Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Detail is Comment not found', () => {",
+                  "    pm.expect(pm.response.json().detail).to.eql('Comment not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/comments/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["comments", "999999"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Wallet",
+      "item": [
+        {
+          "name": "Get Wallet by User ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Wallet has balance and userId', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('balance');",
+                  "    pm.expect(json.userId).to.eql(parseInt(pm.collectionVariables.get('userId')));",
+                  "    pm.expect(json.balance).to.eql(1000);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallet/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallet", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Wallet - Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Detail is Wallet not found', () => {",
+                  "    pm.expect(pm.response.json().detail).to.eql('Wallet not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/wallet/999999",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallet", "999999"]
+            }
+          }
+        },
+        {
+          "name": "Transfer Funds",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const u1 = pm.collectionVariables.get('userId');",
+                  "const u2 = pm.collectionVariables.get('userId2');",
+                  "if (!u1 || !u2) { throw new Error('userId or userId2 not set — run Create User steps first'); }"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Transfer successful message', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql('Transfer successful');",
+                  "    pm.expect(json).to.have.property('sender_balance');",
+                  "    pm.expect(json.sender_balance).to.eql(750);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senderId\": {{userId}},\n  \"receiverId\": {{userId2}},\n  \"amount\": 250\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wallet/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallet", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "Transfer Funds - Insufficient Balance",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 402 for insufficient balance', () => pm.response.to.have.status(402));",
+                  "pm.test('Detail mentions Insufficient balance', () => {",
+                  "    pm.expect(pm.response.json().detail).to.include('Insufficient balance');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senderId\": {{userId}},\n  \"receiverId\": {{userId2}},\n  \"amount\": 9999999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wallet/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallet", "transfer"]
+            }
+          }
+        },
+        {
+          "name": "Transfer Funds - Sender Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 for missing sender', () => pm.response.to.have.status(404));",
+                  "pm.test('Detail mentions Sender wallet', () => {",
+                  "    pm.expect(pm.response.json().detail).to.include('Sender wallet not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"senderId\": 888888,\n  \"receiverId\": {{userId2}},\n  \"amount\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/wallet/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["wallet", "transfer"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deliveries",
+      "item": [
+        {
+          "name": "Create Delivery",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "const uid = pm.collectionVariables.get('userId');",
+                  "const pid = pm.collectionVariables.get('postId');",
+                  "if (!uid || !pid) { throw new Error('userId or postId not set — run Users + Posts steps first'); }"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Delivery created with id', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.message).to.eql('Delivery created');",
+                  "    pm.expect(json).to.have.property('delivery_id');",
+                  "    pm.expect(json.rider_status).to.eql('BUSY');",
+                  "    pm.collectionVariables.set('deliveryId', json.delivery_id);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"post_id\": {{postId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/deliveries",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "deliveries"]
+            }
+          }
+        },
+        {
+          "name": "Create Delivery - User Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 for missing user', () => pm.response.to.have.status(404));",
+                  "pm.test('Detail is User not found', () => {",
+                  "    pm.expect(pm.response.json().detail).to.eql('User not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"post_id\": {{postId}}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/999999/deliveries",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "999999", "deliveries"]
+            }
+          }
+        },
+        {
+          "name": "Create Delivery - Post Not Found",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 for missing post', () => pm.response.to.have.status(404));",
+                  "pm.test('Detail is Post not found', () => {",
+                  "    pm.expect(pm.response.json().detail).to.eql('Post not found');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"post_id\": 999999\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/{{userId}}/deliveries",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "{{userId}}", "deliveries"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Utility",
+      "item": [
+        {
+          "name": "Mock Error - 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Error body mocks status', () => {",
+                  "    pm.expect(pm.response.json().error).to.include('400');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test/error/400",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "error", "400"]
+            }
+          }
+        },
+        {
+          "name": "Mock Error - 500",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 500', () => pm.response.to.have.status(500));",
+                  "pm.test('Error body mocks status', () => {",
+                  "    pm.expect(pm.response.json().error).to.include('500');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/test/error/500",
+              "host": ["{{baseUrl}}"],
+              "path": ["test", "error", "500"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

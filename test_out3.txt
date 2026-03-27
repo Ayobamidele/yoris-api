@@ -1,0 +1,29 @@
+============================= test session starts =============================
+platform win32 -- Python 3.9.10, pytest-8.2.2, pluggy-1.5.0
+rootdir: C:\Users\Ayobamidele Ewetuga\Documents\Bami\Yoris_api
+plugins: anyio-4.4.0, Faker-26.0.0, asyncio-0.23.8, mock-3.14.0, time-machine-2.16.0
+asyncio: mode=strict
+collected 3 items
+
+tests\test_main.py ...                                                   [100%]
+
+============================== warnings summary ===============================
+..\..\..\AppData\Local\Programs\Python\Python39\lib\site-packages\trio\_core\_multierror.py:511
+  C:\Users\Ayobamidele Ewetuga\AppData\Local\Programs\Python\Python39\lib\site-packages\trio\_core\_multierror.py:511: RuntimeWarning: You seem to already have a custom sys.excepthook handler installed. I'll skip installing Trio's custom handler, but this means MultiErrors will not show full tracebacks.
+    warnings.warn(
+
+..\..\..\AppData\Local\Programs\Python\Python39\lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\AppData\Local\Programs\Python\Python39\lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\AppData\Local\Programs\Python\Python39\lib\site-packages\pydantic\_internal\_config.py:291
+..\..\..\AppData\Local\Programs\Python\Python39\lib\site-packages\pydantic\_internal\_config.py:291
+  C:\Users\Ayobamidele Ewetuga\AppData\Local\Programs\Python\Python39\lib\site-packages\pydantic\_internal\_config.py:291: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.8/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+tests/test_main.py::test_health_check
+tests/test_main.py::test_chaos_middleware_fail
+tests/test_main.py::test_idempotency_post_missing_key
+  C:\Users\Ayobamidele Ewetuga\AppData\Local\Programs\Python\Python39\lib\site-packages\httpx\_client.py:1426: DeprecationWarning: The 'app' shortcut is now deprecated. Use the explicit style 'transport=ASGITransport(app=...)' instead.
+    warnings.warn(message, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 3 passed, 8 warnings in 3.93s ========================

@@ -1,0 +1,27 @@
+============================= test session starts =============================
+platform win32 -- Python 3.9.10, pytest-8.2.2, pluggy-1.5.0
+rootdir: C:\Users\Ayobamidele Ewetuga\Documents\Bami\Yoris_api
+plugins: anyio-4.4.0, Faker-26.0.0, asyncio-0.23.8, mock-3.14.0, time-machine-2.16.0
+asyncio: mode=strict
+collected 0 items / 1 error
+
+=================================== ERRORS ====================================
+_____________________ ERROR collecting tests/test_main.py _____________________
+ImportError while importing test module 'C:\Users\Ayobamidele Ewetuga\Documents\Bami\Yoris_api\tests\test_main.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+..\..\..\AppData\Local\Programs\Python\Python39\lib\importlib\__init__.py:127: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+tests\test_main.py:3: in <module>
+    from app.main import app
+E   ModuleNotFoundError: No module named 'app'
+============================== warnings summary ===============================
+..\..\..\AppData\Local\Programs\Python\Python39\lib\site-packages\trio\_core\_multierror.py:511
+  C:\Users\Ayobamidele Ewetuga\AppData\Local\Programs\Python\Python39\lib\site-packages\trio\_core\_multierror.py:511: RuntimeWarning: You seem to already have a custom sys.excepthook handler installed. I'll skip installing Trio's custom handler, but this means MultiErrors will not show full tracebacks.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/test_main.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+========================= 1 warning, 1 error in 0.70s =========================
